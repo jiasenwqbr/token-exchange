@@ -1,68 +1,76 @@
-import "./App.css";
 import React, { Component } from "react";
-import NavBar from "./NavBar";
 import { connect } from "react-redux";
+import "./App.css";
+import Navbar from "./NavBar";
 import Content from "./Content";
-import Web3 from "web3";
 import {
   loadWeb3,
   loadAccount,
   loadToken,
   loadExchange,
 } from "../store/interactionsWithChain";
-import JasonToken from "../abis/JasonToken.json";
+import { metaMaskFound } from "../store/actions";
 import {
   contractsLoadedSelector,
-  exchangeLoadedSelector,
-  tokenLoadedSelector,
+  metaMaskFoundSelector,
 } from "../store/selectors";
+import MetaMaskWarning from "./MetaMaskWarning";
+
+const showError = (props) => {
+  if (!props.metaMaskFound) {
+    return <MetaMaskWarning />;
+  }
+
+  return (
+    <div className="content text-white">
+      <h1>Please log in to MetaMask and refresh the page.</h1>
+    </div>
+  );
+};
 
 class App extends Component {
   componentWillMount() {
-    this.loadBlockChainData(this.props.dispatch);
+    this.loadBlockchainData(this.props.dispatch);
   }
-  async loadBlockChainData(dispatch) {
-    // const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
-    // const networkId = await web3.eth.net.getId();
-    // console.log("networkId", networkId);
-    // const accounts = await web3.eth.getAccounts();
-    // console.log("accounts", accounts);
-    // const token = new web3.eth.Contract(
-    //   JasonToken.abi,
-    //   JasonToken.networks[networkId].address
-    // );
-    // const totalSupply = await token.methods.totalSupply().call();
-    // console.log("token", token);
-    // console.log("totalSupply", totalSupply);
+
+  async loadBlockchainData(dispatch) {
     const web3 = loadWeb3(dispatch);
-    const account = await loadAccount(web3, dispatch);
-    console.log("account", account);
+
+    if (typeof window.web3 === "undefined") {
+      alert("MetaMask not found");
+      dispatch(metaMaskFound(false));
+      return;
+    }
+
+    dispatch(metaMaskFound(true));
+
+    await window.ethereum.enable();
+
+    // let network = await web3.eth.net.getNetworkType();
     const networkId = await web3.eth.net.getId();
+
+    await loadAccount(web3, dispatch);
+
     const token = await loadToken(web3, networkId, dispatch);
+
     if (!token) {
       window.alert(
         "Token smart contract not deployed to the current network. Please select another network with Metamask"
       );
     }
-    console.log("dispatch", dispatch);
-    console.log("token", token);
     const exchange = await loadExchange(web3, networkId, dispatch);
     if (!exchange) {
       window.alert(
         "Exchange smart contract not deployed to the current network. Please select another network with Metamask"
       );
     }
-    console.log("exchange", exchange);
   }
+
   render() {
     return (
       <div className="App">
-        <NavBar />
-        {this.props.contractsLoaded ? (
-          <Content />
-        ) : (
-          <div className="content"></div>
-        )}
+        <Navbar />
+        {this.props.contractsLoaded ? <Content /> : showError(this.props)}
       </div>
     );
   }
@@ -71,8 +79,7 @@ class App extends Component {
 function mapStateToProps(state) {
   return {
     contractsLoaded: contractsLoadedSelector(state),
-    exchangeLoaded: exchangeLoadedSelector(state),
-    tokenLoaded: tokenLoadedSelector(state),
+    metaMaskFound: metaMaskFoundSelector(state),
   };
 }
 

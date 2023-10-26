@@ -12,6 +12,11 @@ export const formatBalance = (balance) => {
 
   return balance;
 };
+const metaMaskFound = (state) => get(state, "web3.metaMaskFound");
+export const metaMaskFoundSelector = createSelector(
+  metaMaskFound,
+  (val) => val
+);
 
 const account = (state) => get(state, "web3.account");
 export const accountSelector = createSelector(account, (a) => a);

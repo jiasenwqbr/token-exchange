@@ -11,6 +11,10 @@ import {
   orderFilling,
   orderCancelled,
   orderFilled,
+  etherBalanceLoaded,
+  tokenBalanceLoaded,
+  exchangeEtherBalanceLoaded,
+  exchangeTokenBalanceLoaded,
   balancesLoaded,
   orderMade,
   balancesLoading,
@@ -144,6 +148,36 @@ export const fillOrder = (dispatch, exchange, order, account) => {
       window.alert("There was an error!");
     });
 };
+export const loadBalances = async (
+  dispatch,
+  web3,
+  exchange,
+  token,
+  account
+) => {
+  // Ether balance in wallet
+  const etherBalance = await web3.eth.getBalance(account);
+  dispatch(etherBalanceLoaded(etherBalance));
+
+  // Token balance in wallet
+  const tokenBalance = await token.methods.balanceOf(account).call();
+  dispatch(tokenBalanceLoaded(tokenBalance));
+
+  // Ether balance in exchange
+  const exchangeEtherBalance = await exchange.methods
+    .balanceOf(ETHER_ADDRESS, account)
+    .call();
+  dispatch(exchangeEtherBalanceLoaded(exchangeEtherBalance));
+
+  // Token balance in exchange
+  const exchangeTokenBalance = await exchange.methods
+    .balanceOf(token.options.address, account)
+    .call();
+  dispatch(exchangeTokenBalanceLoaded(exchangeTokenBalance));
+
+  // Trigger all balances loaded
+  dispatch(balancesLoaded());
+};
 
 export const depositEther = (dispatch, exchange, web3, amount, account) => {
   exchange.methods.depositEther
@@ -173,7 +207,7 @@ export const withdrawEther = (dispatch, exchange, web3, amount, account) => {
     });
 };
 
-export const despostToken = (
+export const depositToken = (
   dispatch,
   exchange,
   web3,
