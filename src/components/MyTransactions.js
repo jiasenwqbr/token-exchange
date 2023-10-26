@@ -33,7 +33,6 @@ const showMyFilledOrders = (props) => {
 const showMyOpenOrders = (props) => {
   //here we read a few things out of props
   const { myOpenOrders, dispatch, exchange, account } = props;
-  console.log("ttttttttttttttt:", typeof myOpenOrders);
   return (
     <tbody>
       {myOpenOrders.map((order) => {

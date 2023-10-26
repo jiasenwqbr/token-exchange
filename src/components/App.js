@@ -34,6 +34,7 @@ class App extends Component {
   }
 
   async loadBlockchainData(dispatch) {
+    console.log("-----------------------------:", dispatch);
     const web3 = loadWeb3(dispatch);
 
     if (typeof window.web3 === "undefined") {

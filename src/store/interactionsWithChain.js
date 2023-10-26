@@ -180,7 +180,9 @@ export const loadBalances = async (
 };
 
 export const depositEther = (dispatch, exchange, web3, amount, account) => {
-  exchange.methods.depositEther
+  console.log(",,,,,,,,,,,,:", exchange);
+  exchange.methods
+    .depositEther()
     .send({
       from: account,
       value: web3.utils.toWei(amount, "ether"),
@@ -264,18 +266,35 @@ export const makeBuyOrder = (
   const amountGet = web3.utils.toWei(order.amount, "ether");
   const tokenGive = ETHER_ADDRESS;
   const amountGive = web3.utils.toWei(
-    (order.amount * order.price).toString(),
+    (Number(order.amount) * Number(order.price)).toString(),
     "ether"
+  );
+  console.log(
+    "-----------------:",
+    "tokenGet:",
+    tokenGet,
+    "amountGet:",
+    amountGet,
+    "tokenGive:",
+    tokenGive,
+    "amountGet:",
+    amountGet,
+    "amountGive:",
+    amountGive,
+    "account",
+    account,
+    "exchange",
+    exchange
   );
   exchange.methods
     .makeOrder(tokenGet, amountGet, tokenGive, amountGive)
     .send({ from: account })
-    .on("transactionshash", (hash) => {
+    .on("transactionHash", (hash) => {
       dispatch(buyOrderMaking());
     })
     .on("error", (error) => {
-      console.log(error);
-      window.alert("There was an error");
+      console.error(error);
+      window.alert("There was an error!");
     });
 };
 
