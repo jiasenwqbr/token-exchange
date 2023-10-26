@@ -76,11 +76,14 @@ class Orderbook extends Component {
 function mapStateToProps(state) {
   const orderBookLoaded = orderBookLoadedSelector(state);
   const orderFilling = orderFillingSelector(state);
+  const account = accountSelector(state);
+  const exchange = exchangeSelector(state);
+  const orderBook = orderBookSelector(state);
   return {
-    orderBook: orderBookSelector(state),
+    orderBook: orderBook,
     showOrderBook: orderBookLoaded && !orderFilling,
-    account: accountSelector(state),
-    exchange: exchangeSelector(state),
+    account: account,
+    exchange: exchange,
   };
 }
 

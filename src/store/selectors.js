@@ -104,7 +104,8 @@ const decorateOrder = (order) => {
 
   // Calculate token price to 5 decimal places
   const precision = 100000;
-  let tokenPrice = etherAmount / tokenAmount;
+  let tokenPrice = Number(etherAmount) / Number(tokenAmount);
+  //let tokenPrice = 0.01;
   tokenPrice = Math.round(tokenPrice * precision) / precision;
 
   return {
@@ -112,7 +113,9 @@ const decorateOrder = (order) => {
     etherAmount: ether(etherAmount),
     tokenAmount: tokens(tokenAmount),
     tokenPrice,
-    formattedTimestamp: moment.unix(order.timestamp).format("h:mm:ss a M/D"),
+    ormattedTimestamp: moment
+      .unix(Number(order.timestamp))
+      .format("h:mm:ss a M/D"),
   };
 };
 
@@ -261,7 +264,7 @@ export const myOpenOrdersSelector = createSelector(
     // Decorate orders - add display attributes
     orders = decorateMyOpenOrders(orders);
     // Sort orders by date descending
-    orders = orders.sort((a, b) => b.timestamp - a.timestamp);
+    orders = orders.sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
     return orders;
   }
 );

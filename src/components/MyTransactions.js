@@ -1,6 +1,64 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import { Tabs, Tab } from "react-bootstrap";
-
+import Spinner from "./Spinner";
+import {
+  myFilledOrdersLoadedSelector,
+  myFilledOrdersSelector,
+  myOpenOrdersLoadedSelector,
+  myOpenOrdersSelector,
+  exchangeSelector,
+  accountSelector,
+  orderCancellingSelector,
+} from "../store/selectors";
+import { cancelOrder } from "../store/interactionsWithChain";
+import { orderCancelling } from "../store/actions";
+const showMyFilledOrders = (props) => {
+  const { myFilledOrders } = props;
+  return (
+    <tbody>
+      {myFilledOrders.map((order) => {
+        <tr key={order.id}>
+          <td className="text-muted">{order.formattedTimestamp}</td>
+          <td className={`text-${order.orderTypeClass}`}>
+            {order.orderSign}
+            {order.tokenAmount}
+          </td>
+          <td className={`text-${order.orderTypeClass}`}>{order.tokenPrice}</td>
+        </tr>;
+      })}
+    </tbody>
+  );
+};
+const showMyOpenOrders = (props) => {
+  //here we read a few things out of props
+  const { myOpenOrders, dispatch, exchange, account } = props;
+  console.log("ttttttttttttttt:", typeof myOpenOrders);
+  return (
+    <tbody>
+      {myOpenOrders.map((order) => {
+        return (
+          <tr key={order.id}>
+            <td className={`text-${order.orderTypeClass}`}>
+              {order.tokenAmount}
+            </td>
+            <td className={`text-${order.orderTypeClass}`}>
+              {order.tokenPrice}
+            </td>
+            <td
+              className="text-muted cancel-order"
+              onClick={(e) => {
+                cancelOrder(dispatch, exchange, order, account);
+              }}
+            >
+              X
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  );
+};
 class MyTransactions extends Component {
   render() {
     return (
@@ -17,11 +75,11 @@ class MyTransactions extends Component {
                     <th>MORDE/ETH</th>
                   </tr>
                 </thead>
-                {/* {this.props.showMyFilledOrders ? (
+                {this.props.showMyFilledOrders ? (
                   showMyFilledOrders(this.props)
                 ) : (
                   <Spinner type="table" />
-                )} */}
+                )}
               </table>
             </Tab>
             <Tab eventKey="orders" title="Orders">
@@ -33,11 +91,11 @@ class MyTransactions extends Component {
                     <th>Cancel</th>
                   </tr>
                 </thead>
-                {/* {this.props.showMyOpenOrders ? (
+                {this.props.showMyOpenOrders ? (
                   showMyOpenOrders(this.props)
                 ) : (
                   <Spinner type="table" />
-                )} */}
+                )}
               </table>
             </Tab>
           </Tabs>
@@ -47,4 +105,23 @@ class MyTransactions extends Component {
   }
 }
 
-export default MyTransactions;
+function mapStateToProps(state) {
+  const myOpenOrdersLoaded = myOpenOrdersLoadedSelector(state);
+  const orderCancelling = orderCancellingSelector(state);
+  const myFilledOrders = myFilledOrdersSelector(state);
+  const showMyFilledOrders = myFilledOrdersSelector(state);
+  const myOpenOrders = myOpenOrdersSelector(state);
+  const exchange = exchangeSelector(state);
+  const account = accountSelector(state);
+
+  return {
+    myFilledOrders: myFilledOrders,
+    showMyFilledOrders: showMyFilledOrders,
+    myOpenOrders: myOpenOrders,
+    showMyOpenOrders: myOpenOrdersLoaded && !orderCancelling,
+    exchange: exchange,
+    account: account,
+  };
+}
+
+export default connect(mapStateToProps)(MyTransactions);
