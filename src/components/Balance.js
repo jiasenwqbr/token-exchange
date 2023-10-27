@@ -263,7 +263,7 @@ function mapStateToProps(state) {
     etherBalance: etherBalanceSelector(state),
     tokenBalance: tokenBalanceSelector(state),
     exchangeEtherBalance: exchangeEtherBalanceSelector(state),
-    exchangeTokenBalance: exchangeTokenBalanceSelector(state),
+    exchangeTokenBalance: exchangeTokenBalanceSelector(state).toString(),
     balancesLoading,
     showForm: !balancesLoading,
     etherDepositAmount: etherDepositAmountSelector(state),

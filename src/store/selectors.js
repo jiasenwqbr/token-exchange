@@ -7,10 +7,10 @@ import { ETHER_ADDRESS, GREEN, RED, ether, tokens } from "../helpers";
 export const formatBalance = (balance) => {
   const precision = 100; // 2 decimal places
 
-  balance = ether(balance);
-  balance = Math.round(balance * precision) / precision; // Use 2 decimal places
-
-  return balance;
+  balance = ether(Number(balance));
+  balance = Math.round(Number(balance * precision) / precision); // Use 2 decimal places
+  console.log("------------------balance:", balance);
+  return Number(balance);
 };
 const metaMaskFound = (state) => get(state, "web3.metaMaskFound");
 export const metaMaskFoundSelector = createSelector(

@@ -34,7 +34,6 @@ class App extends Component {
   }
 
   async loadBlockchainData(dispatch) {
-    console.log("-----------------------------:", dispatch);
     const web3 = loadWeb3(dispatch);
 
     if (typeof window.web3 === "undefined") {
@@ -47,9 +46,9 @@ class App extends Component {
 
     await window.ethereum.enable();
 
-    // let network = await web3.eth.net.getNetworkType();
+    //await web3.eth.net.getNetworkType();
     const networkId = await web3.eth.net.getId();
-
+    console.log("networkId-------------------------networkId:", networkId);
     await loadAccount(web3, dispatch);
 
     const token = await loadToken(web3, networkId, dispatch);

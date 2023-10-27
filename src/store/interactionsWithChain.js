@@ -25,6 +25,7 @@ import JasonToken from "../abis/JasonToken.json";
 import Exchange from "../abis/Exchange.json";
 import { ETHER_ADDRESS } from "../helpers";
 export const loadWeb3 = (dispatch) => {
+  //const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
   const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:7545");
   dispatch(web3Loaded(web3));
   return web3;
@@ -32,6 +33,7 @@ export const loadWeb3 = (dispatch) => {
 
 export const loadAccount = async (web3, dispatch) => {
   const accounts = await web3.eth.getAccounts();
+  console.log("qqqqqqqqqqq:", accounts);
   const account = accounts[0];
   dispatch(web3AccountLoaded(account));
   return account;

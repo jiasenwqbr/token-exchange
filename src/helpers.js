@@ -43,6 +43,8 @@ export const DECIMALS = 10 ** 18;
 export const ether = (wei) => {
   if (wei) {
     return Number(wei) / DECIMALS;
+  } else {
+    return 0;
   }
 };
 
